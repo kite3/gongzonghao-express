@@ -3,6 +3,7 @@ var router = express.Router()
 var sha1 = require('sha1')
 var userModel = require('../db/models/Usermodel')
 const config = require('../config')
+const sign = require('../utils/sign')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -24,8 +25,14 @@ router.get('/authwx', function (req, res, next) {
   }
 })
 
-// 获取js-sdk中wx.config所需的参数
-router.get('/jsapi', function (req, res, next) {})
+// 返回js-sdk中wx.config所需的参数
+router.get('/jsapi', async function (req, res, next) {
+  let url = decodeURIComponent(req.query.url)
+  console.log('>>>>', req.query)
+  let obj = await sign(url)
+  console.log('signature对象：', obj)
+  res.send(obj)
+})
 
 router.post('/testdb', function (req, res, next) {
   const { user, pwd } = req.body
