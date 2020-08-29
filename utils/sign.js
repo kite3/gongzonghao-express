@@ -1,6 +1,7 @@
 const axios = require('axios')
 const sha1 = require('sha1')
 const { appId, appSecret } = require('../config')
+const config = require('../config')
 
 async function getTicket() {
   // 获取access_token
@@ -30,16 +31,11 @@ var row = function (obj) {
   var keys = Object.keys(obj)
   keys.sort() // 字典排序
 
-  var newObj = {}
-  keys.forEach(key => {
-    newObj[key] = obj[key]
-  })
-
   var arr = []
-  Object.keys(newObj).forEach(key => {
-    arr.push(key + '=' + newObj[key])
+  keys.forEach(key => {
+    arr.push(key + '=' + obj[key])
   })
-  return arr.join('').substring(1)
+  return arr.join('')
 }
 
 // 生成signature签名等信息的方法
@@ -48,12 +44,13 @@ var sign = async function (url) {
   let jsapi_ticket = await getTicket()
   var obj = {
     jsapi_ticket,
-    nonceStr: createNonceStr(),
+    noncestr: createNonceStr(),
     timestamp: createTimestamp(),
     url
   }
   var str = row(obj)
   obj.signature = sha1(str) // 生成签名
+  obj.appid = config.appId
   return obj
 }
 
