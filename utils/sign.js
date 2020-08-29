@@ -35,7 +35,7 @@ var row = function (obj) {
   keys.forEach(key => {
     arr.push(key + '=' + obj[key])
   })
-  return arr.join('')
+  return arr.join('&')
 }
 
 // 生成signature签名等信息的方法
