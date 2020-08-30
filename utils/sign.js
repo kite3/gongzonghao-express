@@ -66,5 +66,6 @@ var sign = function (url) {
 
 module.exports = {
   sign,
-  getAccessToken
+  getAccessToken,
+  createTimestamp
 }
