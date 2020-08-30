@@ -8,12 +8,12 @@ async function getTicket() {
   const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`
   const tokenData = await axios.get(tokenUrl)
   const { access_token } = tokenData.data
-  console.log('access_token:', access_token)
+  console.log('access_token', tokenData.data)
 
   // 获取jsapi_ticket
   const ticketUrl = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`
   const ticketData = await axios.get(ticketUrl)
-  console.log('jsapi_ticket:', ticketData.data.ticket)
+  console.log('jsapi_ticket:', ticketData.data)
   return ticketData.data.ticket
 }
 

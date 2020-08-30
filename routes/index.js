@@ -1,13 +1,21 @@
 var express = require('express')
 var router = express.Router()
 var sha1 = require('sha1')
+const fs = require('fs')
+const path = require('path')
 var userModel = require('../db/models/Usermodel')
 const config = require('../config')
 const sign = require('../utils/sign')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express 123888' })
+  fs.readFile(path.join(__dirname, '../public/index.html'), 'utf8', (err, data) => {
+    if (err) {
+      res.send('index.html读取错误')
+      return
+    }
+    res.send(data)
+  })
 })
 
 // 验证消息是否来自微信服务器
@@ -31,7 +39,7 @@ router.get('/jsapi', async function (req, res, next) {
   console.log('>>>>', req.query)
   let obj = await sign(url)
   console.log('signature对象：', obj)
-  res.send(obj)
+  res.json(obj)
 })
 
 router.post('/testdb', function (req, res, next) {

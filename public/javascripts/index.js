@@ -1,4 +1,7 @@
-const API = location.href.indexOf('applinzi') > -1 ? 'http://kite3.applinzi.com' : 'http://localhost:5050'
+// 使用sunny-ngrok进行内网穿透
+const API = 'http://kite3.free.idcfengye.com'
+
+var vConsole = new VConsole()
 
 new Vue({
   el: '#app',
@@ -20,19 +23,23 @@ new Vue({
             timestamp: data.timestamp, // 必填，生成签名的时间戳
             nonceStr: data.noncestr, // 必填，生成签名的随机串
             signature: data.signature, // 必填，签名
-            jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表
+            jsApiList: ['scanQRCode', 'updateTimelineShareData'] // 必填，需要使用的JS接口列表
           })
 
           wx.ready(() => {
             console.log('wx ready!')
-            wx.onMenuShareTimeline({
-              title: '测试分享到朋友', // 分享标题
-              link: 'http://kite3.applinzi.com', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: '', // 分享图标
+
+            //需在用户可能点击分享按钮前就先调用
+            wx.updateTimelineShareData({
+              title: '分享123', // 分享标题
+              link: 'http://kite3.free.idcfengye.com/', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: 'https://cn.vuejs.org/images/logo.png', // 分享图标
               success: function () {
-                alert('用户点击了分享')
+                console.log('分享成功')
               }
             })
+
+            /* ----------------------- */
           })
         })
     },
