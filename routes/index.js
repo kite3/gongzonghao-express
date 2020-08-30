@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 var userModel = require('../db/models/Usermodel')
 const config = require('../config')
-const sign = require('../utils/sign')
+const {sign} = require('../utils/sign')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {

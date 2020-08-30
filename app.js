@@ -3,6 +3,7 @@ var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 
+// 连接数据库
 require('./db/connect')
 
 var indexRouter = require('./routes/index')

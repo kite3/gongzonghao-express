@@ -3,18 +3,26 @@ const sha1 = require('sha1')
 const { appId, appSecret } = require('../config')
 const config = require('../config')
 
-async function getTicket() {
-  // 获取access_token
-  const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`
-  const tokenData = await axios.get(tokenUrl)
-  const { access_token } = tokenData.data
-  console.log('access_token', tokenData.data)
+// 获取access_token
+function getAccessToken() {
+  const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`
+  return axios.get(url).then(({ data }) => {
+    const { access_token } = data
+    console.log('access_token', data)
+    return access_token
+  })
+}
 
-  // 获取jsapi_ticket
-  const ticketUrl = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`
-  const ticketData = await axios.get(ticketUrl)
-  console.log('jsapi_ticket:', ticketData.data)
-  return ticketData.data.ticket
+// 获取jsapi_ticket
+function getTicket() {
+  return getAccessToken().then(access_token => {
+    const url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`
+    return axios.get(url).then(({ data }) => {
+      const { ticket } = data
+      console.log('jsapi_ticket:', data)
+      return ticket
+    })
+  })
 }
 
 // 生成随机字符串
@@ -27,7 +35,8 @@ var createTimestamp = function () {
   return Math.floor(new Date().getTime() / 1000) + ''
 }
 
-var row = function (obj) {
+// 生成签名
+var createSignature = function (obj) {
   var keys = Object.keys(obj)
   keys.sort() // 字典排序
 
@@ -35,23 +44,27 @@ var row = function (obj) {
   keys.forEach(key => {
     arr.push(key + '=' + obj[key])
   })
-  return arr.join('&')
+  return sha1(arr.join('&'))
 }
 
 // 生成signature签名等信息的方法
 // 官方文档：https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html#62
-var sign = async function (url) {
-  let jsapi_ticket = await getTicket()
-  var obj = {
-    jsapi_ticket,
-    noncestr: createNonceStr(),
-    timestamp: createTimestamp(),
-    url
-  }
-  var str = row(obj)
-  obj.signature = sha1(str) // 生成签名
-  obj.appid = config.appId
-  return obj
+var sign = function (url) {
+  return getTicket().then(jsapi_ticket => {
+    // 这里obj里的key必须小写
+    var obj = {
+      jsapi_ticket,
+      noncestr: createNonceStr(),
+      timestamp: createTimestamp(),
+      url
+    }
+    obj.signature = createSignature(obj)
+    obj.appid = config.appId
+    return obj
+  })
 }
 
-module.exports = sign
+module.exports = {
+  sign,
+  getAccessToken
+}
