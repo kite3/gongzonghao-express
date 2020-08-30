@@ -32,7 +32,7 @@ new Vue({
               success: function () {
                 alert('用户点击了分享')
               }
-            }
+            })
           })
         })
     },
