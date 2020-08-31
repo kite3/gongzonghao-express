@@ -10,7 +10,7 @@ const { toJSON, toXML } = require('../utils/xmlTool')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  fs.readFile(path.join(__dirname, '../public/index.html'), 'utf8', (err, data) => {
+  fs.readFile(path.join(__dirname, '../public/entry.html'), 'utf8', (err, data) => {
     if (err) {
       res.send('index.html读取错误')
       return
@@ -92,6 +92,20 @@ router.get('/jsapi', async function (req, res, next) {
   let obj = await sign(url)
   console.log('signature对象：', obj)
   res.json(obj)
+})
+
+router.get('/getAuth', function (req, res, next) {
+  // 模拟未授权
+  let hasAuth = false
+  if (!hasAuth) {
+    console.log('redirecting')
+    const redirectUrl = encodeURIComponent(config.redirectUrl)
+    // 非静默授权
+    const wxUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appId}&redirect_uri=${redirectUrl}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`
+    // 静默授权
+    // const wxUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appId}&redirect_uri=${redirectUrl}&response_type=code&scope=snsapi_base&state=123#wechat_redirect`
+    res.redirect(wxUrl)
+  }
 })
 
 router.post('/testdb', function (req, res, next) {

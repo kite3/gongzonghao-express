@@ -7,6 +7,14 @@ new Vue({
   el: '#app',
   mounted() {
     this.wxconfig()
+    const code = getSearchValue('code')
+    console.log('code from weixin:', code)
+    if (!code) {
+      setTimeout(() => {
+        console.timeEnd('ss')
+        // this.$refs.authLink.click()
+      }, 2000)
+    }
   },
   methods: {
     wxconfig() {
@@ -52,6 +60,27 @@ new Vue({
           console.log(result)
         }
       })
+    },
+    getAuth() {
+      location.href = '/getAuth'
     }
   }
 })
+
+/* 
+  作用：获取location.search中的某个参数值
+  假设当前url为：http://www.baidu.com?code=123#/auth
+  getSearchValue('code') === '123'
+*/
+function getSearchValue(key) {
+  const searchString = window.location.search.substring(1)
+  const params = searchString.split('&')
+
+  for (let i = 0; i < params.length; i++) {
+    const val = params[i].split('=')
+    if (val[0] == key) {
+      return val[1]
+    }
+  }
+  return null
+}
